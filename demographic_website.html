@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Demografische Daten</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <form id="demographic-form">
+                <h2>Demografische Daten</h2>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name"><br><br>
+
+                <label for="age">Alter:</label>
+                <input type="number" id="age" name="age"><br><br>
+
+                <label for="gender">Geschlecht:</label>
+                <select id="gender" name="gender">
+                    <option value="male">Männlich</option>
+                    <option value="female">Weiblich</option>
+                    <option value="other">Andere</option>
+                </select><br><br>
+
+                <input type="submit" value="Absenden">
+            </form>
+        </div>
+        <div class="image-container">
+            <img src="bild.jpg" alt="Demografisches Bild">
+        </div>
+    </div>
+</body>
+</html>
