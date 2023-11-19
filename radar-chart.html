@@ -58,15 +58,26 @@
 
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);
+        let originParam = params.get('origin') || '["de",27,0.9]';
+        let origin;
+
+        try {
+            origin = JSON.parse(originParam);
+        } catch (e) {
+            console.error('Error parsing origin parameter:', e);
+            origin = ["de", 27, 0.9]; // default value
+        }
+
         return {
-            age: params.get('age') || 50,
+            age: parseInt(params.get('age'), 10) || 50,
             gender: params.get('gender') || 'female',
-            origin: JSON.parse(params.get('origin') || '{"code":"de","points":59.95,"mp":1.0}'),
-            height: params.get('height') || 169,
-            weight: params.get('weight') || 105,
+            origin: origin,
+            height: parseInt(params.get('height'), 10) || 169,
+            weight: parseInt(params.get('weight'), 10) || 105,
             pupilColor: params.get('pupilColor') || 'blue'
         };
     }
+
 
 
     // Strafpunkte für das Alter berechnen
@@ -117,14 +128,15 @@
         const pupilColorPoint = pupils.find(item => item.color === applicant.pupilColor);
 
         return {
-            agePoints: (getPointsForAge(applicant.age)) * applicant.origin[2],
+            agePoints: getPointsForAge(applicant.age) * applicant.origin[2],
             genderPoints: (genderPoint ? genderPoint.points : 0) * applicant.origin[2],
             originPoints: applicant.origin[1],
-            heightPoints: (calculatePenaltyForRange(applicant.height, optimalHeightRange, 60)) * applicant.origin[2],
-            weightPoints: (calculatePenaltyForRange(applicant.weight, optimalWeightRange, 60)) * applicant.origin[2],
+            heightPoints: calculatePenaltyForRange(applicant.height, optimalHeightRange, 60) * applicant.origin[2],
+            weightPoints: calculatePenaltyForRange(applicant.weight, optimalWeightRange, 60) * applicant.origin[2],
             pupilColorPoints: (pupilColorPoint ? pupilColorPoint.points : 0) * applicant.origin[2]
         };
     }
+
 
 
     async function loadChartData() {

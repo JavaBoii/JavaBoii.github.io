@@ -53,16 +53,10 @@ function calculatePoints(country) {
 function populateCountries(selectElementId, countries) {
     const select = document.getElementById(selectElementId);
     countries.forEach(country => {
-        // Calculate points and mp for each country
         let calculatedValues = calculatePoints(country);
 
         let option = document.createElement("option");
-        // Create a JSON string with country code, points, and mp
-        option.value = JSON.stringify({
-            code: country.code,
-            points: calculatedValues.points,
-            mp: calculatedValues.mp
-        });
+        option.value = JSON.stringify([country.code, calculatedValues.points, calculatedValues.mp]);
         option.textContent = country.flag + ' ' + country.name;
         select.appendChild(option);
     });
