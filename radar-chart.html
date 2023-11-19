@@ -53,49 +53,20 @@
     const optimalWeightRange = [70, 100];   // Optimal range for weight in kg
 
 
-    <?php
-    function sanitizeInput($data): string
-    {
-        return htmlspecialchars(trim($data));
+    function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            age: params.get('age') || 50,
+            gender: params.get('gender') || 'female',
+            origin: JSON.parse(params.get('origin') || '{"code":"de","points":59.95,"mp":1.0}'),
+            height: params.get('height') || 169,
+            weight: params.get('weight') || 105,
+            pupilColor: params.get('pupilColor') || 'blue'
+        };
     }
-    // Check if all parameters are set and not empty
-    if (isset($_POST['age'], $_POST['gender'], $_POST['origin'], $_POST['height'], $_POST['weight'], $_POST['pupilColor'])) {
-        if (is_string($_POST['origin']) && is_array(json_decode($_POST['origin'], true))) {
-            $origin = json_decode($_POST['origin'], true);
-        } else {
-            // Set to default if not valid
-            $origin = ["de", 59.95, 1.0];
-        }
-
-        $applicant = [
-            'age' => sanitizeInput($_POST['age']),
-            'gender' => sanitizeInput($_POST['gender']),
-            'origin' => $origin,
-            'height' => sanitizeInput($_POST['height']),
-            'weight' => sanitizeInput($_POST['weight']),
-            'pupilColor' => sanitizeInput($_POST['pupilColor'])
-        ];
-    } else {
-    ?>
-    console.log("No parameters set, using default values");
-    <?php
-        $origin = ["de", 59.95, 1.0];
-        $applicant = [
-            'age' => 50,
-            'gender' => 'female',
-            'origin' => $origin,
-            'height' => 169,
-            'weight' => 105,
-            'pupilColor' => 'blue'
-        ];
-    }
-    ?>
 
 
-
-
-    // Objekt mit Bewerberdaten
-    let applicant = <?php echo json_encode($applicant); ?>;
+    let applicant = getQueryParams();
 
     // Strafpunkte für das Alter berechnen
     function calculatePenaltyPoints(age, lowerBound, upperBound, maxPoints) {

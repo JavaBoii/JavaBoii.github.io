@@ -53,18 +53,20 @@ function calculatePoints(country) {
 function populateCountries(selectElementId, countries) {
     const select = document.getElementById(selectElementId);
     countries.forEach(country => {
-        // Calculate points for each country
+        // Calculate points and mp for each country
         let calculatedValues = calculatePoints(country);
-        country.points = calculatedValues.points;
-        country.mp = calculatedValues.mp;
 
         let option = document.createElement("option");
-        option.value = JSON.stringify([country.code, country.points, country.mp]);
+        // Create a JSON string with country code, points, and mp
+        option.value = JSON.stringify({
+            code: country.code,
+            points: calculatedValues.points,
+            mp: calculatedValues.mp
+        });
         option.textContent = country.flag + ' ' + country.name;
         select.appendChild(option);
     });
 }
-
 
 document.addEventListener('DOMContentLoaded', async function() {
     const countries = await fetchCountries();
