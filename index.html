@@ -3,35 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <title>Demografische Daten</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 600px;
+            padding: 20px;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="form-container">
-            <form id="demographic-form">
-                <h2>Demografische Daten</h2>
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name"><br><br>
-
-                <label for="age">Alter:</label>
-                <input type="number" id="age" name="age"><br><br>
-
-                <label for="gender">Geschlecht:</label>
-                <select id="gender" name="gender">
-                    <option value="male">Männlich</option>
-                    <option value="female">Weiblich</option>
-                    <option value="other">Andere</option>
-                </select><br><br>
-
-                <input type="submit" value="Absenden">
-            </form>
+<div class="container">
+    <form action="radar-chart.php" method="post">
+        <!-- Alter -->
+        <div class="mb-3">
+            <label for="age" class="form-label">Alter</label>
+            <input id="age" type="number" name="age" class="form-control" min="18" max="80" value="18">
         </div>
-        <div class="image-container">
-            <img src="https://via.placeholder.com/400x400" alt="Demografisches Bild">
+        <!-- Geschlecht -->
+        <div class="mb-3">
+            <label for="gender-select" class="form-label">Geschlecht</label>
+            <select name="gender" id="gender-select" class="form-select">
+                <option value="male">Männlich</option>
+                <option value="female">Weiblich</option>
+                <option value="diverse">Divers</option>
+            </select>
         </div>
-        <div id="result"></div>
-    </div>
+        <!-- Herkunft -->
+        <div class="mb-3">
+            <label for="origin-select" class="form-label">Herkunft</label>
+            <select name="origin" id="origin-select" class="form-select">
+
+            </select>
+        </div>
+        <!-- Größe -->
+        <div class="mb-3">
+            <label for="height-slider" class="form-label">Größe</label>
+            <input type="range" class="form-range" min="100" max="210" id="height-slider" name="height">
+            <span id="height-value">150</span> cm
+        </div>
+        <!-- Gewicht -->
+        <div class="mb-3">
+            <label for="weight-slider" class="form-label">Gewicht</label>
+            <input type="range" class="form-range" min="50" max="200" id="weight-slider" name="weight">
+            <span id="weight-value">140</span> kg
+        </div>
+        <!-- Pupillenfarbe -->
+        <div class="mb-3">
+            <label for="pupilColor-select" class="form-label">Pupillenfarbe</label>
+            <select name="pupilColor" id="pupilColor-select" class="form-select">
+                <option value="blue">Blau</option>
+                <option value="brown">Braun</option>
+                <option value="green">Grün</option>
+                <option value="grey">Grau</option>
+                <option value="hazel">Haselnuss</option>
+                <option value="amber">Bernstein</option>
+            </select>
+        </div>
+        <!-- Button -->
+        <button class="btn btn-primary" type="submit">Bewertung anzeigen</button>
+    </form>
+</div>
+<script src="js/countries.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    // Initialisierung und Event Listener für die Slider
+    document.addEventListener('DOMContentLoaded', function () {
+        const heightSlider = document.getElementById('height-slider');
+        const weightSlider = document.getElementById('weight-slider');
+        const heightValue = document.getElementById('height-value');
+        const weightValue = document.getElementById('weight-value');
+
+        function updateSliderValue(slider, display) {
+            display.textContent = slider.value;
+        }
+
+        // Event Listener für die Slider
+        heightSlider.addEventListener('input', function () {
+            updateSliderValue(heightSlider, heightValue);
+        });
+
+        weightSlider.addEventListener('input', function () {
+            updateSliderValue(weightSlider, weightValue);
+        });
+
+        // Initialwert setzen
+        updateSliderValue(heightSlider, heightValue);
+        updateSliderValue(weightSlider, weightValue);
+    });
+</script>
+<script>
+
+    $(document).ready(function () {
+        $('#origin-select').select2({
+            theme: 'bootstrap-5'
+        });
+    });
+</script>
+
 </body>
 </html>
-
