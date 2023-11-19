@@ -12,10 +12,13 @@
 
         .chart-container {
             height: 500px; /* or any other height */
-            width: 500px;  /* or any other width */
+            width: 500px; /* or any other width */
             margin: auto; /* This centers the div */
             position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
         }
 
         canvas {
@@ -65,8 +68,6 @@
         };
     }
 
-
-    let applicant = getQueryParams();
 
     // Strafpunkte für das Alter berechnen
     function calculatePenaltyPoints(age, lowerBound, upperBound, maxPoints) {
@@ -126,56 +127,64 @@
     }
 
 
-    // Punkte für den Bewerber holen
-    let applicantPoints = calcPointsForApplicant(applicant);
+    async function loadChartData() {
+        let applicant = getQueryParams(); // get data from URL parameters
+        let applicantPoints = calcPointsForApplicant(applicant); // calculate points
 
-    // Radar-Chart initialisieren
-    var ctx = document.getElementById('meinRadarChart').getContext('2d');
-    var meinRadarChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: ['Alter', 'Geschlecht', 'Herkunft', 'Größe', 'Gewicht', 'Augenfarbe', 'test', 'test'],
+        renderChart(applicantPoints); // render the chart with the calculated points
+    }
 
-            datasets: [{
-                label: 'Bewertung',
-                data: [applicantPoints.agePoints,
-                    applicantPoints.genderPoints,
-                    applicantPoints.originPoints,
-                    applicantPoints.heightPoints,
-                    applicantPoints.weightPoints,
-                    applicantPoints.pupilColorPoints
-                ], // Punkte
-                backgroundColor: "rgba(0,162,255,0.36)",
-                borderColor: "rgba(0,132,204,0.37)",
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                r: {
-                    angleLines: {
+    function renderChart(applicantPoints) {
+        // Radar-Chart initialisieren
+        var ctx = document.getElementById('meinRadarChart').getContext('2d');
+        var meinRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Alter', 'Geschlecht', 'Herkunft', 'Größe', 'Gewicht', 'Augenfarbe', 'test', 'test'],
+
+                datasets: [{
+                    label: 'Bewertung',
+                    data: [applicantPoints.agePoints,
+                        applicantPoints.genderPoints,
+                        applicantPoints.originPoints,
+                        applicantPoints.heightPoints,
+                        applicantPoints.weightPoints,
+                        applicantPoints.pupilColorPoints
+                    ], // Punkte
+                    backgroundColor: "rgba(0,162,255,0.36)",
+                    borderColor: "rgba(0,132,204,0.37)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        ticks: {
+                            display: false
+                        },
+                        min: 0,
+                        max: 60,
+                        pointLabels: {
+                            display: true
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
                         display: true
                     },
-                    ticks: {
-                        display: false
-                    },
-                    min: 0,
-                    max: 60,
-                    pointLabels: {
-                        display: true
+                    tooltip: {
+                        enabled: false
                     }
                 }
-            },
-            plugins: {
-                legend: {
-                    display: true
-                },
-                tooltip: {
-                    enabled: false
-                }
             }
-        }
-    });
+        });
+    }
+
+    loadChartData();
 </script>
 </body>
 </html>
