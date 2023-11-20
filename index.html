@@ -73,6 +73,25 @@
                 <option value="amber">Bernstein</option>
             </select>
         </div>
+        <!-- Haarfarbe -->
+        <div class="mb-3">
+            <label for="hairColor-select" class="form-label">Haarfarbe</label>
+            <select name="hairColor" id="hairColor-select" class="form-select">
+                <option value="black">Schwarz</option>
+                <option value="brown">Braun</option>
+                <option value="blonde">Blond</option>
+                <option value="auburn">Kastanienbraun</option>
+                <option value="red">Rot</option>
+                <option value="grey">Grau</option>
+                <option value="white">Weiß</option>
+            </select>
+        </div>
+        <!-- Notendurchschnitt -->
+        <div class="mb-3">
+            <label for="gpa-slider" class="form-label">Notendurchschnitt (GPA)</label>
+            <input type="range" class="form-range" min="10" max="60" id="gpa-slider" name="gpa" value="10" step="1">
+            <span id="gpa-value">1.0</span>
+        </div>
         <!-- Button -->
         <button class="btn btn-primary" type="submit">Bewertung anzeigen</button>
     </form>
@@ -89,6 +108,8 @@
         const weightSlider = document.getElementById('weight-slider');
         const heightValue = document.getElementById('height-value');
         const weightValue = document.getElementById('weight-value');
+        const gpaSlider = document.getElementById('gpa-slider');
+        const gpaValue = document.getElementById('gpa-value');
 
         function updateSliderValue(slider, display) {
             display.textContent = slider.value;
@@ -103,9 +124,15 @@
             updateSliderValue(weightSlider, weightValue);
         });
 
+        gpaSlider.addEventListener('input', function () {
+            const gpa = (gpaSlider.value / 10).toFixed(1);
+            gpaValue.textContent = gpa;
+        });
+
         // Initialwert setzen
         updateSliderValue(heightSlider, heightValue);
         updateSliderValue(weightSlider, weightValue);
+        gpaValue.textContent = (gpaSlider.value / 10).toFixed(1);
     });
 </script>
 <script>

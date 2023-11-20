@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
     <title>Radar-Chart Demo</title>
+    <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -51,6 +52,17 @@
         {color: 'amber', points: 50}
     ];
 
+    let hairColors = [
+        {color: 'black', points: 60},
+        {color: 'brown', points: 50},
+        {color: 'blonde', points: 55},
+        {color: 'auburn', points: 45},
+        {color: 'red', points: 40},
+        {color: 'grey', points: 35},
+        {color: 'white', points: 30}
+    ];
+
+
     // Optimal ranges
     const optimalHeightRange = [180, 200]; // Optimal range for height in cm
     const optimalWeightRange = [70, 100];   // Optimal range for weight in kg
@@ -58,7 +70,7 @@
 
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);
-        let originParam = params.get('origin') || '["de",27,0.9]';
+        let originParam = params.get('origin') || '["de",27,1.0]';
         let origin;
 
         try {
@@ -74,10 +86,11 @@
             origin: origin,
             height: parseInt(params.get('height'), 10) || 169,
             weight: parseInt(params.get('weight'), 10) || 105,
-            pupilColor: params.get('pupilColor') || 'blue'
+            pupilColor: params.get('pupilColor') || 'blue',
+            gpa: parseInt(params.get('gpa'), 10) || 1.0,
+            hairColor: params.get('hairColor') || 'brown',
         };
     }
-
 
 
     // Strafpunkte für das Alter berechnen
@@ -122,10 +135,24 @@
         return 0;
     }
 
+    // Punkte für den notendurchschnitt holen
+    function getPointsForGPA(gpa) {
+        if (gpa >= 10 && gpa < 15) return 60;
+        if (gpa >= 15 && gpa < 20) return 50;
+        if (gpa >= 20 && gpa < 25) return 40;
+        if (gpa >= 25 && gpa < 30) return 35;
+        if (gpa >= 30 && gpa < 35) return 30;
+        if (gpa >= 35 && gpa < 40) return 25;
+        if (gpa >= 40 && gpa < 50) return 20;
+        if (gpa >= 50 && gpa <= 60) return 20;
+        return 0;
+    }
+
     // Punkte für den Bewerber berechnen
     function calcPointsForApplicant(applicant) {
         const genderPoint = gender.find(item => item.sex === applicant.gender);
         const pupilColorPoint = pupils.find(item => item.color === applicant.pupilColor);
+        const hairColorPoint = hairColors.find(item => item.color === applicant.hairColor);
 
         return {
             agePoints: getPointsForAge(applicant.age) * applicant.origin[2],
@@ -133,10 +160,11 @@
             originPoints: applicant.origin[1],
             heightPoints: calculatePenaltyForRange(applicant.height, optimalHeightRange, 60) * applicant.origin[2],
             weightPoints: calculatePenaltyForRange(applicant.weight, optimalWeightRange, 60) * applicant.origin[2],
-            pupilColorPoints: (pupilColorPoint ? pupilColorPoint.points : 0) * applicant.origin[2]
+            pupilColorPoints: (pupilColorPoint ? pupilColorPoint.points : 0) * applicant.origin[2],
+            gpaPoints: getPointsForGPA(applicant.gpa) * applicant.origin[2],
+            hairColorPoints: (hairColorPoint ? hairColorPoint.points : 0) * applicant.origin[2],
         };
     }
-
 
 
     async function loadChartData() {
@@ -152,17 +180,20 @@
         var meinRadarChart = new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: ['Alter', 'Geschlecht', 'Herkunft', 'Größe', 'Gewicht', 'Augenfarbe', 'test', 'test'],
+                labels: ['Alter', 'Geschlecht', 'Herkunft', 'Größe', 'Gewicht', 'Augenfarbe', 'Noten ⌀', 'Haarfarbe'],
 
                 datasets: [{
                     label: 'Bewertung',
-                    data: [applicantPoints.agePoints,
+                    data: [
+                        applicantPoints.agePoints,
                         applicantPoints.genderPoints,
                         applicantPoints.originPoints,
                         applicantPoints.heightPoints,
                         applicantPoints.weightPoints,
-                        applicantPoints.pupilColorPoints
-                    ], // Punkte
+                        applicantPoints.pupilColorPoints,
+                        applicantPoints.gpaPoints,
+                        applicantPoints.hairColorPoints
+                    ],
                     backgroundColor: "rgba(0,162,255,0.36)",
                     borderColor: "rgba(0,132,204,0.37)",
                     borderWidth: 1
@@ -178,7 +209,7 @@
                             display: false
                         },
                         min: 0,
-                        max: 60,
+                        max: 70,
                         pointLabels: {
                             display: true
                         }
