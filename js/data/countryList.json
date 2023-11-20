@@ -1,5 +1,23 @@
 [
   {
+    "name": "Germany",
+    "code": "DE",
+    "capital": "Berlin",
+    "region": "EU",
+    "currency": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€"
+    },
+    "language": {
+      "code": "de",
+      "name": "German"
+    },
+    "flag": "\uD83C\uDDE9\uD83C\uDDEA",
+    "dialling_code": "+49",
+    "isoCode": "276"
+  },
+  {
     "name": "Afghanistan",
     "code": "AF",
     "capital": "Kabul",
@@ -1358,24 +1376,6 @@
     "flag": "\uD83C\uDDEC\uD83C\uDDEA",
     "dialling_code": "+995",
     "isoCode": "268"
-  },
-  {
-    "name": "Germany",
-    "code": "DE",
-    "capital": "Berlin",
-    "region": "EU",
-    "currency": {
-      "code": "EUR",
-      "name": "Euro",
-      "symbol": "€"
-    },
-    "language": {
-      "code": "de",
-      "name": "German"
-    },
-    "flag": "\uD83C\uDDE9\uD83C\uDDEA",
-    "dialling_code": "+49",
-    "isoCode": "276"
   },
   {
     "name": "Ghana",

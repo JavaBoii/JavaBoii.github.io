@@ -62,11 +62,50 @@
         {color: 'white', points: 30}
     ];
 
+    //optimal height range
+    const optimalHeightRanges = {
+        male: [170, 190], // Males are optimally between 170 and 190 cm tall
+        female: [160, 175], // Females are optimally between 160 and 175 cm tall
+        diverse: [165, 185] // Diverse category can have a range that spans between male and female
+    };
 
-    // Optimal ranges
-    const optimalHeightRange = [180, 200]; // Optimal range for height in cm
-    const optimalWeightRange = [70, 100];   // Optimal range for weight in kg
 
+    // Optimal weight ranges based on gender and height intervals
+    const optimalWeightRanges = {
+        male: [
+            { min: 100, max: 130, weightRange: [30, 50] },
+            { min: 130, max: 140, weightRange: [40, 60] },
+            { min: 140, max: 150, weightRange: [50, 70] },
+            { min: 150, max: 160, weightRange: [60, 80] },
+            { min: 160, max: 170, weightRange: [70, 90] },
+            { min: 170, max: 180, weightRange: [80, 100] },
+            { min: 180, max: 190, weightRange: [70, 100] },
+        ],
+        female: [
+            { min: 100, max: 129, weightRange: [25, 45] },
+            { min: 130, max: 139, weightRange: [35, 55] },
+            { min: 140, max: 149, weightRange: [45, 65] },
+            { min: 150, max: 159, weightRange: [55, 75] },
+            { min: 160, max: 169, weightRange: [65, 85] },
+            { min: 170, max: 179, weightRange: [75, 95] },
+            { min: 180, max: 189, weightRange: [75, 100] },
+            { min: 190, max: 200, weightRange: [75, 100] },
+        ],
+        diverse: [
+            // Define ranges for diverse gender if necessary
+        ],
+    };
+
+    // Function to find the optimal weight range for a given height and gender
+    function findOptimalWeightRange(height, gender) {
+        const ranges = optimalWeightRanges[gender];
+        for (const range of ranges) {
+            if (height >= range.min && height <= range.max) {
+                return range.weightRange;
+            }
+        }
+        return null; // Or a default range if needed
+    }
 
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);
@@ -92,7 +131,6 @@
         };
     }
 
-
     // Strafpunkte für das Alter berechnen
     function calculatePenaltyPoints(age, lowerBound, upperBound, maxPoints) {
         const penaltyPerYear = 0.05; // 5% penalty
@@ -101,22 +139,23 @@
         return maxPoints - penalty;
     }
 
-    // Optimaler Bereich für Größe und Gewicht
-    function calculatePenaltyForRange(value, optimalRange, maxPoints) {
+    // Adjusted function to calculate penalty based on weight, gender, and height
+    function calculatePenaltyForRange(weight, optimalRange, maxPoints) {
         const penaltyPerUnit = 0.025; // 2.5% penalty
         const maxPenalty = maxPoints * 0.80; // Maximum 80% penalty
         const [optimalMin, optimalMax] = optimalRange;
 
-        if (value >= optimalMin && value <= optimalMax) return maxPoints;
+        if (weight >= optimalMin && weight <= optimalMax) return maxPoints;
 
-        const unitsFromOptimal = value < optimalMin ? optimalMin - value : value - optimalMax;
+        const unitsFromOptimal = weight < optimalMin ? optimalMin - weight : weight - optimalMax;
         let penalty = unitsFromOptimal * penaltyPerUnit * maxPoints;
 
-        // Cap the penalty at a maximum of 20%
+        // Cap the penalty at a maximum of 80%
         penalty = Math.min(penalty, maxPenalty);
 
         return Math.max(maxPoints - penalty, 0);
     }
+
 
     // Punkte für das Alter holen
     function getPointsForAge(age) {
@@ -148,18 +187,43 @@
         return 0;
     }
 
-    // Punkte für den Bewerber berechnen
+    // Function to calculate height points
+    function calculateHeightPoints(height, gender, maxPoints) {
+        const optimalRange = optimalHeightRanges[gender];
+        if (height >= optimalRange[0] && height <= optimalRange[1]) {
+            // If height is within the optimal range, return max points
+            return maxPoints;
+        } else {
+            // If height is outside the optimal range, calculate penalty
+            const penaltyPerUnit = 0.025; // Define the penalty per unit outside the range
+            const maxPenalty = maxPoints * 0.80; // Maximum 80% penalty
+            const unitsFromOptimal = Math.min(Math.abs(height - optimalRange[0]), Math.abs(height - optimalRange[1]));
+            let penalty = unitsFromOptimal * penaltyPerUnit * maxPoints;
+            penalty = Math.min(penalty, maxPenalty);
+            return Math.max(maxPoints - penalty, 0); // Return the remaining points after penalty
+        }
+    }
+
+
+    // Modify the calcPointsForApplicant function
     function calcPointsForApplicant(applicant) {
         const genderPoint = gender.find(item => item.sex === applicant.gender);
         const pupilColorPoint = pupils.find(item => item.color === applicant.pupilColor);
         const hairColorPoint = hairColors.find(item => item.color === applicant.hairColor);
 
+        // Use the new calculateHeightPoints function
+        const heightPoints = calculateHeightPoints(applicant.height, applicant.gender, 60);
+
+        // Find the optimal weight range based on the applicant's height and gender
+        const optimalWeightRange = findOptimalWeightRange(applicant.height, applicant.gender) || [0, 0]; // Added default range
+        const weightPoints = calculatePenaltyForRange(applicant.weight, optimalWeightRange, 60);
+
         return {
             agePoints: getPointsForAge(applicant.age) * applicant.origin[2],
             genderPoints: (genderPoint ? genderPoint.points : 0) * applicant.origin[2],
             originPoints: applicant.origin[1],
-            heightPoints: calculatePenaltyForRange(applicant.height, optimalHeightRange, 60) * applicant.origin[2],
-            weightPoints: calculatePenaltyForRange(applicant.weight, optimalWeightRange, 60) * applicant.origin[2],
+            heightPoints: heightPoints * applicant.origin[2], // Updated to use heightPoints from the new function
+            weightPoints: weightPoints * applicant.origin[2],
             pupilColorPoints: (pupilColorPoint ? pupilColorPoint.points : 0) * applicant.origin[2],
             gpaPoints: getPointsForGPA(applicant.gpa) * applicant.origin[2],
             hairColorPoints: (hairColorPoint ? hairColorPoint.points : 0) * applicant.origin[2],
